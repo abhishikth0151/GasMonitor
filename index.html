@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gas Monitoring System</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; color: #333; text-align: center; }
+        h1 { color: #005cbf; }
+        .data-container { padding: 20px; }
+        .data { font-size: 2em; color: #333; }
+        .status-safe { color: #5cb85c; }
+        .status-danger { color: #d9534f; font-weight: bold; }
+        .alert-symbol { font-size: 3em; color: #d9534f; display: none; }
+        .alert-message { color: #d9534f; font-weight: bold; display: none; }
+    </style>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+    <script>
+        // Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyBY1ud_HTuSS748IjRv2CXfnZ7L5KizDL0",
+            authDomain: "gas-monitoring-system-af094.firebaseapp.com",
+            databaseURL: "https://gas-monitoring-system-af094-default-rtdb.firebaseio.com",
+            projectId: "gas-monitoring-system-af094",
+            storageBucket: "gas-monitoring-system-af094.appspot.com",
+            messagingSenderId: "240441678749",
+            appId: "1:240441678749:web:a18cb1745c2ce05939ed74"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        function updateGasLevelDisplay(gasLevel) {
+            document.getElementById('gasLevel').innerText = gasLevel;
+            let status = document.getElementById('status');
+            let alertSymbol = document.getElementById('alertSymbol');
+            let alertMessage = document.getElementById('alertMessage');
+            if (parseInt(gasLevel) > 137) {
+                status.innerText = 'Danger! High Gas Level';
+                status.className = 'status-danger';
+                alertSymbol.style.display = 'block';
+                alertMessage.style.display = 'block';
+            } else {
+                status.innerText = 'Gas Level is Safe';
+                status.className = 'status-safe';
+                alertSymbol.style.display = 'none';
+                alertMessage.style.display = 'none';
+            }
+        }
+
+        // Fetch data from Firebase
+        firebase.database().ref("/gasmonitor/gasLevel").on("value", (snapshot) => {
+            const gasLevel = snapshot.val();
+            updateGasLevelDisplay(gasLevel);
+        });
+    </script>
+</head>
+<body>
+    <h1>Gas Monitoring System</h1>
+    <p>Monitoring the environment for gas levels</p>
+    <div class="data-container">
+        <p>Current Gas Level: <span class="data" id="gasLevel">0</span></p>
+        <p id="status" class="status-safe">Gas Level is Safe</p>
+        <p id="alertSymbol" class="alert-symbol">&#9888;</p>  <!-- Warning Symbol -->
+        <p id="alertMessage" class="alert-message">Danger! High Gas Level Detected!</p>
+    </div>
+</body>
+</html>
